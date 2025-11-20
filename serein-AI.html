@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Serein · AI & Alerts Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courgette&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#e8f1fb;
+      --card:#ffffff;
+      --card-soft:#f5f7ff;
+      --text-main:#10213a;
+      --text-soft:#60708d;
+      --primary:#6faedc;
+      --primary2:#8ed3c5;
+      --shadow:0 18px 40px rgba(90,122,150,.18);
+      --radius:22px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(1200px 900px at 90% -10%,rgba(111,174,220,.45),transparent),
+        radial-gradient(900px 600px at -5% 0,rgba(244,198,215,.35),transparent),
+        var(--bg);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* SIDEBAR */
+    .sidebar{
+      width:220px;
+      padding:24px 18px;
+      background:rgba(14,23,42,0.95);
+      color:#f4f7ff;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+    .side-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .side-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .side-logo-icon img{
+        width:80%;
+        height:80%;
+        object-fit:contain;
+    }
+    .side-logo-text{
+      font-family:"Courgette",cursive;
+      font-size:24px;
+    }
+    .side-logo-tag{
+      font-size:10px;
+      color:#9faad7;
+      margin-top:2px;
+    }
+    .side-nav{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+    }
+    .side-link{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8e0ff;
+      cursor:pointer;
+    }
+    .side-link span.icon{
+      width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.1);
+      font-size:13px;
+    }
+    .side-link.active{
+      background:rgba(255,255,255,.16);
+      color:#ffffff;
+    }
+    .side-footer{
+      margin-top:auto;
+      font-size:10px;
+      color:#9faad7;
+    }
+
+    /* MAIN */
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+    .main-inner{
+      max-width:1120px;
+      margin:0 auto;
+      width:100%;
+      padding:20px 22px 32px;
+    }
+
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .top-left small{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .top-left h1{
+      font-size:22px;
+      margin-top:4px;
+    }
+    .top-left h1 span{
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .top-right{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .chip-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(96,112,141,.3);
+      background:rgba(255,255,255,.8);
+      cursor:pointer;
+      font-size:11px;
+    }
+    .chip.active{
+      border-color:rgba(111,174,220,.9);
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;
+    }
+
+    /* CARDS & GRID */
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+      margin-bottom:16px;
+    }
+    .card-soft{
+      background:linear-gradient(145deg,#f7fbff,#edf1ff);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+      margin-bottom:16px;
+    }
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .card-title{
+      font-size:14px;
+      font-weight:600;
+    }
+    .card-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(111,174,220,.12);
+      color:#325574;
+      white-space:nowrap;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+      align-items:flex-start;
+    }
+    @media(max-width:900px){
+      .grid-2{grid-template-columns:1fr;}
+    }
+
+    /* TOGGLES, SELECTS */
+    .setting-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:7px 0;
+      font-size:11px;
+      border-bottom:1px dashed rgba(190,204,230,.6);
+    }
+    .setting-row:last-child{
+      border-bottom:none;
+    }
+    .setting-label{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .setting-main{
+      font-size:12px;
+      color:var(--text-main);
+    }
+    .setting-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+
+    .toggle{
+      position:relative;
+      width:38px;
+      height:20px;
+      border-radius:999px;
+      background:#d1d9ea;
+      cursor:pointer;
+      flex-shrink:0;
+    }
+    .toggle::after{
+      content:"";
+      position:absolute;
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      background:#ffffff;
+      top:2px;
+      left:2px;
+      box-shadow:0 2px 4px rgba(0,0,0,.25);
+      transition:transform .18s ease;
+    }
+    .toggle.on{
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+    }
+    .toggle.on::after{
+      transform:translateX(18px);
+    }
+
+    .inline-select{
+      padding:5px 9px;
+      border-radius:999px;
+      border:1px solid rgba(160,181,221,.7);
+      font-size:11px;
+      background:#f8fbff;
+      color:#325574;
+    }
+
+    /* EMERGENCY CONTACTS */
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:6px;
+    }
+    @media(max-width:900px){
+      .contact-grid{grid-template-columns:1fr;}
+    }
+    .contact-card{
+      background:linear-gradient(145deg,#f7fbff,#edf2ff);
+      border-radius:18px;
+      padding:12px 14px;
+      border:1px solid rgba(171,192,225,.6);
+      font-size:11px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .contact-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .contact-name{
+      font-size:13px;
+      font-weight:600;
+    }
+    .contact-tag{
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(142,211,197,.2);
+      color:#2c6b58;
+      font-size:10px;
+    }
+    .contact-tag.secondary{
+      background:#f3f7ff;
+      color:#3a5175;
+    }
+    .contact-info{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      color:var(--text-soft);
+    }
+    .contact-actions{
+      margin-top:6px;
+      display:flex;
+      justify-content:flex-end;
+      gap:6px;
+    }
+    .btn-ghost{
+      padding:4px 9px;
+      border-radius:999px;
+      border:1px solid rgba(160,181,221,.6);
+      background:#ffffff;
+      font-size:10px;
+      cursor:pointer;
+      color:#325574;
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:10px;
+      color:var(--text-soft);
+      text-align:right;
+    }
+
+    @media(max-width:960px){
+      body{flex-direction:column;}
+      .sidebar{
+        width:100%;
+        flex-direction:row;
+        align-items:center;
+        padding:14px 18px;
+      }
+      .side-nav{display:none;}
+      .side-footer{display:none;}
+      .main-inner{padding:18px 16px 26px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="side-logo">
+        <div class="side-logo-icon"><img src="Logo_clean.png" alt="Serein Logo"></div>
+        <div>
+          <div class="side-logo-text">Serein</div>
+          <div class="side-logo-tag">Gentle smart care</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <a href="serein-app.html" class="side-link">
+          <span class="icon">🏠</span>Home dashboard
+        </a>
+        <a href="serein-metrics.html" class="side-link">
+          <span class="icon">📊</span>Health metrics
+        </a>
+        <a href="serein-bookings.html" class="side-link">
+          <span class="icon">📅</span>Book services
+        </a>
+        <a href="serein-schedule.html" class="side-link">
+          <span class="icon">🧭</span>Schedule
+        </a>
+        <a href="serein-chronic.html" class="side-link">
+          <span class="icon">🫀</span>Chronic pathways
+        </a>
+        <a href="serein-settings.html" class="side-link active">
+          <span class="icon">🕊️</span>AI Settings
+        </a>
+      </nav>
+    </div>
+    <div class="side-footer">
+      Demo UI for concept only · Not a medical device.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-inner">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-left">
+          <small>AI & alerts settings · for Grandma Lin</small>
+          <h1>How Serein <span>reminds & warns</span></h1>
+        </div>
+        <div class="top-right">
+          <div class="chip-row">
+            <span class="chip active">AI alerts</span>
+            <span class="chip">Devices</span>
+          </div>
+          <span>These settings sync to the smartwatch.</span>
+        </div>
+      </header>
+
+      <!-- SECTION 1: MEDICATION REMINDERS -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Medication reminders</div>
+            <div class="card-sub">When and how to remind Grandma Lin</div>
+          </div>
+          <span class="pill">Shown on watch</span>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="setting-main">Remind before dose</span>
+            <span class="setting-sub">For all daily medicines</span>
+          </div>
+          <select class="inline-select">
+            <option>5 minutes</option>
+            <option selected>10 minutes</option>
+            <option>15 minutes</option>
+            <option>30 minutes</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="setting-main">Smartwatch vibration</span>
+            <span class="setting-sub">Short buzz with “time for medicine”</span>
+          </div>
+          <div class="toggle on" data-toggle></div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="setting-main">Phone notification</span>
+            <span class="setting-sub">Show reminder on caregiver’s phone</span>
+          </div>
+          <div class="toggle on" data-toggle></div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-label">
+            <span class="setting-main">Missed dose follow-up</span>
+            <span class="setting-sub">If no response after first reminder</span>
+          </div>
+          <select class="inline-select">
+            <option>Do nothing</option>
+            <option selected>Remind again after 15 min</option>
+            <option>Alert caregiver</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- SECTION 2: VISIT REMINDERS -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Home & community visit reminders</div>
+            <div class="card-sub">For nurses and community helpers</div>
+          </div>
+          <span class="pill">“Nurse Wang arrives at 15:00”</span>
+        </div>
+
+        <div class="grid-2">
+          <!-- Home visits -->
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Home visits</div>
+
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="setting-main">30 min before</span>
+                <span class="setting-sub">“Nurse will visit this afternoon”</span>
+              </div>
+              <div class="toggle on" data-toggle></div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="setting-main">5 min before</span>
+                <span class="setting-sub">“Nurse Wang arriving around 15:00”</span>
+              </div>
+              <div class="toggle on" data-toggle></div>
+            </div>
+          </div>
+
+          <!-- Community care -->
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Community care</div>
+
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="setting-main">30 min before</span>
+                <span class="setting-sub">Groceries / walk / pick up meds</span>
+              </div>
+              <div class="toggle on" data-toggle></div>
+            </div>
+
+            <div class="setting-row">
+              <div class="setting-label">
+                <span class="setting-main">5 min before</span>
+                <span class="setting-sub">“Helper Chen arriving soon”</span>
+              </div>
+              <div class="toggle on" data-toggle></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: EMERGENCY CONTACTS -->
+      <section class="card-soft">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Emergency contacts</div>
+            <div class="card-sub">These appear on the watch in emergencies</div>
+          </div>
+          <span class="pill">Tap-to-call from watch</span>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Contact 1 -->
+          <article class="contact-card">
+            <div class="contact-top">
+              <div class="contact-name">Winnie</div>
+              <span class="contact-tag">Primary</span>
+            </div>
+            <div class="contact-info">
+              <span>Relationship: Granddaughter</span>
+              <span>Phone: +852 9123 4567</span>
+            </div>
+            <div class="contact-actions">
+              <button class="btn-ghost">Edit</button>
+            </div>
+          </article>
+
+          <!-- Contact 2 -->
+          <article class="contact-card">
+            <div class="contact-top">
+              <div class="contact-name">Mr. Lin</div>
+              <span class="contact-tag secondary">Backup</span>
+            </div>
+            <div class="contact-info">
+              <span>Relationship: Son</span>
+              <span>Phone: +852 9654 3210</span>
+            </div>
+            <div class="contact-actions">
+              <button class="btn-ghost">Edit</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Serein AI & alerts settings · Reminders shown on smartwatch · Demo interface · Not a medical device.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 简单开关效果（纯前端示意）
+    document.querySelectorAll('[data-toggle]').forEach(tg=>{
+      tg.addEventListener('click',()=>{
+        tg.classList.toggle('on');
+      });
+    });
+  </script>
+</body>
+</html>

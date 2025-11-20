@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Serein · Care Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courgette&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#e8f1fb;
+      --bg-deep:#0e172a;
+      --card:#ffffff;
+      --card-soft:#f5f7ff;
+      --text-main:#10213a;
+      --text-soft:#60708d;
+      --primary:#6faedc;
+      --primary2:#8ed3c5;
+      --shadow:0 18px 40px rgba(90,122,150,.18);
+      --radius:22px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(1200px 900px at 90% -10%,rgba(111,174,220,.45),transparent),
+        radial-gradient(900px 600px at -5% 0,rgba(244,198,215,.35),transparent),
+        var(--bg);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* LAYOUT */
+    .sidebar{
+      width:220px;
+      padding:24px 18px;
+      background:rgba(14,23,42,0.95);
+      color:#f4f7ff;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+    .side-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .side-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .side-logo-icon img{
+        width:80%;
+        height:80%;
+        object-fit:contain;
+    }
+    .side-logo-text{
+      font-family:"Courgette",cursive;
+      font-size:24px;
+    }
+    .side-logo-tag{
+      font-size:10px;
+      color:#9faad7;
+      margin-top:2px;
+    }
+
+    .side-nav{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+    }
+    .side-link{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8e0ff;
+      cursor:pointer;
+    }
+    .side-link span.icon{
+      width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.1);
+      font-size:13px;
+    }
+    .side-link.active{
+      background:rgba(255,255,255,.16);
+      color:#ffffff;
+    }
+    .side-footer{
+      margin-top:auto;
+      font-size:10px;
+      color:#9faad7;
+    }
+
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+    .main-inner{
+      max-width:1120px;
+      margin:0 auto;
+      width:100%;
+      padding:20px 22px 32px;
+    }
+
+    /* TOP BAR */
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:18px;
+    }
+    .top-left small{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .top-left h1{
+      font-size:22px;
+      margin-top:4px;
+      /* background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      -webkit-background-clip:text;
+      color:transparent; */
+    }
+    .top-left h1 span{
+      background:linear-gradient(135deg,#478bbe,#2ca78e);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .top-user{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:12px;
+      color:var(--text-soft);
+    }
+    .top-user-avatar{
+      width:32px;height:32px;border-radius:999px;
+      background:linear-gradient(135deg,#e9aac1,#aa8ce7);
+      display:grid;
+      place-items:center;
+      font-size:20px;
+      color:#0e172a;
+    }
+
+    /* CONTENT GRID */
+    .grid{
+      display:grid;
+      grid-template-columns:2.1fr 1.2fr;
+      gap:18px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+    }
+    .card-soft{
+      background:linear-gradient(145deg,#f7fbff,#edf1ff);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+    }
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .card-title{
+      font-size:16px;
+      font-weight:600;
+      color:black;
+      margin-bottom:4px;
+    }
+    .card-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(111,174,220,.1);
+      color:#325574;
+    }
+
+    /* KPI ROW */
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+    .kpi{
+      background:var(--card-soft);
+      border-radius:18px;
+      padding:10px 11px 11px;
+      border:1px solid rgba(149,175,214,.5);
+    }
+    .kpi-label{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .kpi-value{
+      font-size:19px;
+      font-weight:700;
+      margin-top:2px;
+    }
+    .kpi-note{
+      font-size:10px;
+      color:var(--text-soft);
+      margin-top:2px;
+    }
+
+    /* LEFT MAIN */
+    .vital-row{
+      display:grid;
+      grid-template-columns:1.5fr 1fr;
+      gap:14px;
+    }
+    canvas{max-width:100%;}
+
+    .timeline{
+      margin-top:4px;
+      font-size:11px;
+      color:var(--text-soft);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .t-item{
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .t-time{
+      width:52px;
+      color:#325574;
+      font-weight:500;
+    }
+    .t-dot{
+      width:8px;height:8px;border-radius:999px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      margin-top:4px;
+      flex-shrink:0;
+    }
+    .t-text{
+      flex:1;
+    }
+
+    /* RIGHT COLUMN */
+    .profile{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .profile-avatar{
+      width:40px;height:40px;border-radius:999px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;place-items:center;
+      color:#0e172a;
+      font-weight:700;
+    }
+    .profile-name{
+      font-size:14px;
+      font-weight:600;
+    }
+    .profile-meta{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(142,211,197,.16);
+      color:#2c6b58;
+      font-size:10px;
+      margin-top:5px;
+    }
+    .list{
+      margin-top:8px;
+      font-size:11px;
+      color:var(--text-soft);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .list strong{color:var(--text-main);}
+
+    .tag-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:6px;
+    }
+    .tag{
+      padding:4px 8px;
+      border-radius:999px;
+      background:#f3f7ff;
+      font-size:10px;
+      color:#3a5175;
+    }
+
+    .ai-card{
+      font-size:12px;
+      color:var(--text-soft);
+    }
+    .ai-card p{
+      margin-bottom:8px;
+    }
+    .ai-bubble{
+      margin-top:6px;
+      padding:8px 10px;
+      border-radius:14px;
+      background:#f4f8ff;
+      font-size:11px;
+      text-align:left;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      font-size:10px;
+      color:var(--text-soft);
+      text-align:right;
+    }
+
+    @media (max-width:960px){
+      body{flex-direction:column;}
+      .sidebar{
+        flex-direction:row;
+        align-items:center;
+        width:100%;
+        padding:14px 18px;
+      }
+      .side-nav{display:none;}
+      .side-footer{display:none;}
+      .main-inner{padding:18px 16px 26px;}
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width:640px){
+      .kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .vital-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="side-logo">
+        <div class="side-logo-icon"><img src="Logo_clean.png" alt="Serein Logo"></div>
+        <div>
+          <div class="side-logo-text">Serein</div>
+          <div class="side-logo-tag">Gentle smart care</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <a href="serein-home.html" class="side-link active">
+          <span class="icon">🏠</span>Home dashboard
+        </a>
+        <a href="serein-metrics.html" class="side-link">
+          <span class="icon">📊</span>Health metrics
+        </a>
+        <a href="serein-bookings.html" class="side-link">
+          <span class="icon">📅</span>Book services
+        </a>
+        <a href="serein-schedule.html" class="side-link">
+          <span class="icon">🧭</span>Schedule
+        </a>
+        <a href="serein-chronic.html" class="side-link">
+          <span class="icon">🫀</span>Chronic pathways
+        </a>
+        <a href="serein-AI.html" class="side-link">
+          <span class="icon">🕊️</span>AI Settings
+        </a>
+      </nav>
+    </div>
+    <div class="side-footer">
+      Demo UI for concept only · Not a medical device.
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+    <div class="main-inner">
+      <!-- top bar -->
+      <header class="top-bar">
+        <div class="top-left">
+          <small>Welcome back, Winnie · Care navigator</small>
+          <h1>Today with ♥ <span>Grandma Lin</span></h1>
+        </div>
+        <div class="top-user">
+          <span>Family account</span>
+          <div class="top-user-avatar">🐱</div>
+        </div>
+      </header>
+
+      <!-- KPIs -->
+      <section class="kpis">
+        <div class="kpi">
+          <div class="kpi-label">Avg heart rate</div>
+          <div class="kpi-value">76 bpm</div>
+          <div class="kpi-note">Calm &amp; stable this week</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Sleep duration</div>
+          <div class="kpi-value">7.8 h</div>
+          <div class="kpi-note">More deep sleep than last week</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Steps per day</div>
+          <div class="kpi-value">6,320</div>
+          <div class="kpi-note">+1,200 vs last week</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Medication adherence</div>
+          <div class="kpi-value">100%</div>
+          <div class="kpi-note">0 missed doses in 7 days</div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <!-- LEFT -->
+        <section>
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Vitals this week</div>
+                <div class="card-sub">Heart rate trend · soft color = safe zone</div>
+              </div>
+              <span class="pill">Demo data</span>
+            </div>
+            <div class="vital-row">
+              <canvas id="hrChart" height="120"></canvas>
+              <div>
+                <div class="card-sub" style="margin-bottom:6px;">Today’s gentle timeline</div>
+                <div class="timeline">
+                  <div class="t-item">
+                    <div class="t-time">08:00</div>
+                    <div class="t-dot"></div>
+                    <div class="t-text">AI companion checks in and guides a 5-min breathing exercise.</div>
+                  </div>
+                  <div class="t-item">
+                    <div class="t-time">10:30</div>
+                    <div class="t-dot"></div>
+                    <div class="t-text">Nurse Mei visits home · measures BP &amp; adjusts walking plan.</div>
+                  </div>
+                  <div class="t-item">
+                    <div class="t-time">15:00</div>
+                    <div class="t-dot"></div>
+                    <div class="t-text">Community helper brings fresh groceries and chats over tea.</div>
+                  </div>
+                  <div class="t-item">
+                    <div class="t-time">20:00</div>
+                    <div class="t-dot"></div>
+                    <div class="t-text">Serein reads a short story and reminds tomorrow’s clinic visit.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:14px;"></div>
+
+          <div class="card-soft">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Today’s care checklist</div>
+                <div class="card-sub">Quick overview for family &amp; care team</div>
+              </div>
+            </div>
+            <div class="tag-row">
+              <span class="tag">💊 Morning medication taken</span>
+              <span class="tag">🧠 Cognition check · normal</span>
+              <span class="tag">🚶 15-min walk completed</span>
+              <span class="tag">🩺 Blood pressure within target</span>
+              <span class="tag">🕊️ Mood: “calm & content”</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT -->
+        <section>
+          <div class="card">
+            <div class="profile">
+              <div class="profile-avatar">L</div>
+              <div>
+                <div class="profile-name">Grandma Lin, 78</div>
+                <div class="profile-meta">Living alone · Type 2 diabetes · Mild hypertension</div>
+                <div class="badge">Low risk this week</div>
+              </div>
+            </div>
+            <div class="list">
+              <div><strong>Care circle:</strong> Winnie (granddaughter), Dr. Chan (GP), Nurse Mei, Community helper Lee</div>
+              <div><strong>Next visits:</strong> Clinic check-up · Tomorrow 10:00 · Serein will arrange taxi &amp; reminders.</div>
+              <div><strong>Focus this month:</strong> More gentle movement, stable blood sugar, better sleep routine.</div>
+            </div>
+          </div>
+
+          <div style="height:14px;"></div>
+
+          <div class="card ai-card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Serein’s gentle summary</div>
+                <div class="card-sub">AI-generated weekly insight · for family only</div>
+              </div>
+            </div>
+            <p>
+              Based on this week’s vitals, activity and mood check-ins, Grandma Lin is doing well.
+              Heart rate and blood pressure stayed inside the agreed safe ranges.
+            </p>
+            <div class="ai-bubble">
+              <strong>Suggestion:</strong><br>
+              Keep the short afternoon walks — they improve both sleep and mood.  
+              If evening blood sugar stays above target for 3 consecutive days,
+              I’ll suggest a check-in with Dr. Chan.
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <div class="footer-note">
+        Demo interface for Serein · Concept only · Not a medical device.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // simple demo heart-rate chart
+    const ctx = document.getElementById('hrChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{
+          label: 'Heart rate',
+          data: [78, 80, 76, 74, 77, 75, 76],
+          tension: 0.4,
+          borderColor: '#6faedc',
+          backgroundColor: 'rgba(111,174,220,0.18)',
+          pointRadius: 2,
+          fill: true
+        }]
+      },
+      options: {
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:'rgba(96,112,141,0.1)'}},
+          y:{
+            suggestedMin:60,
+            suggestedMax:90,
+            grid:{color:'rgba(96,112,141,0.1)'}
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

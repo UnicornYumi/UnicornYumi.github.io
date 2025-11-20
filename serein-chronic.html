@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Serein · Chronic Pathways</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courgette&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#e8f1fb;
+      --card:#ffffff;
+      --card-soft:#f5f7ff;
+      --text-main:#10213a;
+      --text-soft:#60708d;
+      --primary:#6faedc;
+      --primary2:#8ed3c5;
+      --shadow:0 18px 40px rgba(90,122,150,.18);
+      --radius:22px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(1200px 900px at 90% -10%,rgba(111,174,220,.45),transparent),
+        radial-gradient(900px 600px at -5% 0,rgba(244,198,215,.35),transparent),
+        var(--bg);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* SIDEBAR */
+    .sidebar{
+      width:220px;
+      padding:24px 18px;
+      background:rgba(14,23,42,0.95);
+      color:#f4f7ff;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+    .side-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .side-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .side-logo-icon img{
+        width:80%;
+        height:80%;
+        object-fit:contain;
+    }
+    .side-logo-text{
+      font-family:"Courgette",cursive;
+      font-size:24px;
+    }
+    .side-logo-tag{
+      font-size:10px;
+      color:#9faad7;
+      margin-top:2px;
+    }
+    .side-nav{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+    }
+    .side-link{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8e0ff;
+      cursor:pointer;
+    }
+    .side-link span.icon{
+      width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.1);
+      font-size:13px;
+    }
+    .side-link.active{
+      background:rgba(255,255,255,.16);
+      color:#ffffff;
+    }
+    .side-footer{
+      margin-top:auto;
+      font-size:10px;
+      color:#9faad7;
+    }
+    .device-battery{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      margin-top:6px;
+    }
+
+    .device-pill{
+      padding:5px 10px;
+      font-size:11px;
+      background:rgba(232,241,251,.8);
+      border-radius:999px;
+      border:1px solid rgba(120,145,180,.35);
+      color:#325574;
+      white-space:nowrap;
+    }
+
+    /* MAIN */
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+    .main-inner{
+      max-width:1120px;
+      margin:0 auto;
+      width:100%;
+      padding:20px 22px 32px;
+    }
+
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .top-left small{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .top-left h1{
+      font-size:22px;
+      margin-top:4px;
+    }
+    .top-left h1 span{
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .top-right{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .chip-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(96,112,141,.3);
+      background:rgba(255,255,255,.8);
+      cursor:pointer;
+      font-size:11px;
+    }
+    .chip.active{
+      border-color:rgba(111,174,220,.9);
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;
+    }
+
+    /* CARDS & GRID */
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+      margin-bottom:16px;
+    }
+    .card-soft{
+      background:linear-gradient(145deg,#f7fbff,#edf1ff);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+      margin-bottom:16px;
+    }
+    .card-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .card-title{
+      font-size:14px;
+      font-weight:600;
+    }
+    .card-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(111,174,220,.12);
+      color:#325574;
+      white-space:nowrap;
+    }
+
+    .nurse-section{
+  margin-top:14px;
+}
+
+.nurse-toggle{
+  padding:6px 14px;
+  border-radius:999px;
+  font-size:12px;
+  border:none;
+  background:linear-gradient(135deg,#6faedc,#8ed3c5);
+  color:#0e172a;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(111,174,220,.4);
+}
+
+.nurse-panel{
+  margin-top:10px;
+  display:none;
+  background:var(--card);
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px solid rgba(120,145,190,.3);
+  box-shadow:0 12px 24px rgba(120,145,190,.2);
+}
+
+.nurse-panel .panel-title{
+  font-size:12px;
+  font-weight:600;
+  margin-bottom:10px;
+}
+
+.input-label{
+  font-size:11px;
+  color:var(--text-soft);
+  display:block;
+  margin-top:8px;
+}
+
+.input-row{
+  display:flex;
+  gap:8px;
+  margin-top:4px;
+}
+
+.input-row input{
+  flex:1;
+  padding:6px 8px;
+  border-radius:10px;
+  border:1px solid rgba(150,170,205,.45);
+  font-size:11px;
+}
+
+  .file-input{
+    margin-top:6px;
+    font-size:11px;
+  }
+
+  .nurse-save{
+    margin-top:12px;
+    padding:6px 14px;
+    border-radius:999px;
+    border:none;
+    background:#325574;
+    color:white;
+    font-size:11px;
+    cursor:pointer;
+  }
+
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+      align-items:flex-start;
+    }
+    .grid-3{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media(min-width:1040px){
+      .grid-3{grid-template-columns:1fr 1fr 1fr;}
+    }
+
+    /* CONDITION CARDS */
+    .condition-card{
+      background:linear-gradient(140deg,#f7fbff,#edf2ff);
+      border-radius:18px;
+      padding:12px 14px;
+      border:1px solid rgba(171,192,225,.6);
+      box-shadow:0 10px 24px rgba(120,145,190,.2);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      font-size:11px;
+    }
+    .condition-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .condition-name{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:13px;
+      font-weight:600;
+    }
+    .condition-icon{
+      width:22px;height:22px;border-radius:999px;
+      background:rgba(111,174,220,.15);
+      display:grid;place-items:center;
+      font-size:13px;
+    }
+    .condition-status{
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:10px;
+      background:rgba(142,211,197,.2);
+      color:#2c6b58;
+    }
+    .condition-status.warn{
+      background:rgba(255,204,166,.35);
+      color:#a45a1a;
+    }
+    .cond-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:10px;
+      color:var(--text-soft);
+    }
+    .cond-row strong{
+      color:var(--text-main);
+    }
+    .cond-pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:2px;
+    }
+    .cond-pill{
+      padding:3px 7px;
+      border-radius:999px;
+      background:#f3f7ff;
+      font-size:10px;
+      color:#3a5175;
+    }
+
+    /* PROGRESS BARS */
+    .progress-line{
+      width:100%;
+      height:7px;
+      border-radius:999px;
+      background:rgba(213,222,240,.8);
+      overflow:hidden;
+      margin-top:4px;
+    }
+    .progress-fill{
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+    }
+
+    /* CHECKLIST */
+    .checklist{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-top:4px;
+      font-size:11px;
+    }
+    .check-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 9px;
+      border-radius:14px;
+      background:#f7f9ff;
+    }
+    .check-icon{
+      width:16px;height:16px;border-radius:999px;
+      border:1px solid rgba(151,173,214,.9);
+      display:grid;place-items:center;
+      font-size:10px;
+      color:#6faedc;
+      background:#fff;
+    }
+    .check-label{
+      flex:1;
+      color:var(--text-main);
+    }
+
+    .adherence-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:11px;
+      margin-top:4px;
+    }
+    .adh-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .adh-label{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .adh-value{
+      font-size:11px;
+      color:#325574;
+      white-space:nowrap;
+    }
+
+    /* AI SUMMARY */
+    .ai-row{
+      display:grid;
+      grid-template-columns:1.2fr 1fr;
+      gap:16px;
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    @media(max-width:900px){
+      .ai-row{grid-template-columns:1fr;}
+    }
+    .ai-highlight{
+      font-size:12px;
+      color:var(--text-main);
+      font-weight:600;
+      margin-bottom:6px;
+    }
+    .ai-chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+    }
+    .ai-chip{
+      padding:4px 8px;
+      border-radius:999px;
+      background:#f3f7ff;
+      color:#3a5175;
+      font-size:10px;
+    }
+    .ai-list{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .ai-list li{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .dot{
+      width:6px;height:6px;border-radius:999px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      flex-shrink:0;
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:10px;
+      color:var(--text-soft);
+      text-align:right;
+    }
+
+    @media(max-width:960px){
+      body{flex-direction:column;}
+      .sidebar{
+        width:100%;
+        flex-direction:row;
+        align-items:center;
+        padding:14px 18px;
+      }
+      .side-nav{display:none;}
+      .side-footer{display:none;}
+      .main-inner{padding:18px 16px 26px;}
+      .grid-2{grid-template-columns:1fr;}
+      .grid-3{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="side-logo">
+        <div class="side-logo-icon"><img src="Logo_clean.png" alt="Serein Logo"></div>
+        <div>
+          <div class="side-logo-text">Serein</div>
+          <div class="side-logo-tag">Gentle smart care</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <a href="serein-home.html" class="side-link">
+          <span class="icon">🏠</span>Home dashboard
+        </a>
+        <a href="serein-metrics.html" class="side-link">
+          <span class="icon">📊</span>Health metrics
+        </a>
+        <a href="serein-bookings.html" class="side-link">
+          <span class="icon">📅</span>Book services
+        </a>
+        <a href="serein-schedule.html" class="side-link">
+          <span class="icon">🧭</span>Schedule
+        </a>
+        <a href="serein-chronic.html" class="side-link active">
+          <span class="icon">🫀</span>Chronic pathways
+        </a>
+        <a href="serein-AI.html" class="side-link">
+          <span class="icon">🕊️</span>AI Settings
+        </a>
+      </nav>
+    </div>
+    <div class="side-footer">
+      Demo UI for concept only · Not a medical device.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-inner">
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-left">
+          <small>Chronic condition pathways · Grandma Lin</small>
+          <h1>Gentle plans for <span>BP & sugar</span></h1>
+        </div>
+        <!-- <div class="top-right">
+          <div class="chip-row">
+            <span class="chip active">This week</span>
+            <span class="chip">This month</span>
+          </div>
+          <span>Less numbers, more clear steps.</span>
+        </div> -->
+        <div class="device-battery">
+        <span class="device-pill">
+          🩺 BP monitor · <strong>78%</strong>
+        </span>
+        <span class="device-pill">
+          🍚 Glucose meter · <strong>62%</strong>
+        </span>
+        </div>
+      </header>
+
+      <!-- SECTION 1: PATHWAYS OVERVIEW -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Chronic care pathways</div>
+            <div class="card-sub">Key goals for each condition</div>
+          </div>
+          <span class="pill">Hypertension · Diabetes</span>
+        </div>
+
+        <div class="grid-3">
+          <!-- Hypertension -->
+          <article class="condition-card">
+            <div class="condition-top">
+              <div class="condition-name">
+                <div class="condition-icon">🩺</div>
+                Hypertension
+              </div>
+              <span class="condition-status">Stable</span>
+            </div>
+            <div class="cond-row">
+              <span>Weekly BP logs</span>
+              <span><strong>5 / 7 days</strong></span>
+            </div>
+            <div class="progress-line">
+              <div class="progress-fill" style="width:72%;"></div>
+            </div>
+            <div class="cond-pill-row">
+              <span class="cond-pill">Target: 120–130 / 70–80</span>
+              <span class="cond-pill">Clinic: in 3 weeks</span>
+            </div>
+          </article>
+
+          <!-- Diabetes -->
+          <article class="condition-card">
+            <div class="condition-top">
+              <div class="condition-name">
+                <div class="condition-icon">🍚</div>
+                Diabetes
+              </div>
+              <span class="condition-status warn">Watch</span>
+            </div>
+            <div class="cond-row">
+              <span>Fasting glucose logs</span>
+              <span><strong>6 / 7 days</strong></span>
+            </div>
+            <div class="progress-line">
+              <div class="progress-fill" style="width:80%;"></div>
+            </div>
+            <div class="cond-pill-row">
+              <span class="cond-pill">Target: &lt; 5.6 mmol/L</span>
+              <span class="cond-pill">Evening snack: reduce</span>
+            </div>
+          </article>
+
+          <!-- Activity / Lifestyle -->
+          <article class="condition-card">
+            <div class="condition-top">
+              <div class="condition-name">
+                <div class="condition-icon">🚶</div>
+                Lifestyle
+              </div>
+              <span class="condition-status">On track</span>
+            </div>
+            <div class="cond-row">
+              <span>Dinner walk days</span>
+              <span><strong>4 / 7 days</strong></span>
+            </div>
+            <div class="progress-line">
+              <div class="progress-fill" style="width:65%;"></div>
+            </div>
+            <div class="cond-pill-row">
+              <span class="cond-pill">Goal: 10–15 min walk</span>
+              <span class="cond-pill">Target: 5 days / week</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SECTION 2: DAILY ROUTINE & ADHERENCE -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Today & this week</div>
+            <div class="card-sub">Simple routine for Grandma Lin</div>
+          </div>
+          <span class="pill">Checklist · adherence</span>
+        </div>
+
+
+        <div class="grid-2">
+          <!-- Checklist -->
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">Today</div>
+            <div class="checklist">
+              <div class="check-item">
+                <div class="check-icon">✓</div>
+                <div class="check-label">Morning BP</div>
+              </div>
+              <div class="check-item">
+                <div class="check-icon">✓</div>
+                <div class="check-label">Fasting glucose</div>
+              </div>
+              <div class="check-item">
+                <div class="check-icon"></div>
+                <div class="check-label">Morning medicines</div>
+              </div>
+              <div class="check-item">
+                <div class="check-icon"></div>
+                <div class="check-label">Evening medicines</div>
+              </div>
+              <div class="check-item">
+                <div class="check-icon"></div>
+                <div class="check-label">10-min walk after dinner</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly adherence -->
+          <div>
+            <div class="card-sub" style="margin-bottom:4px;">This week</div>
+            <div class="adherence-list">
+              <div class="adh-row">
+                <span class="adh-label">BP logs</span>
+                <span class="adh-value">5 / 7</span>
+              </div>
+              <div class="progress-line">
+                <div class="progress-fill" style="width:72%;"></div>
+              </div>
+
+              <div class="adh-row">
+                <span class="adh-label">Medicines on time</span>
+                <span class="adh-value">13 / 14</span>
+              </div>
+              <div class="progress-line">
+                <div class="progress-fill" style="width:88%;"></div>
+              </div>
+
+              <div class="adh-row">
+                <span class="adh-label">Dinner walks</span>
+                <span class="adh-value">4 / 7</span>
+              </div>
+              <div class="progress-line">
+                <div class="progress-fill" style="width:65%;"></div>
+              </div>
+
+              <div class="adh-row">
+                <span class="adh-label">Glucose logs</span>
+                <span class="adh-value">6 / 7</span>
+              </div>
+              <div class="progress-line">
+                <div class="progress-fill" style="width:80%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="nurse-section">
+        <button class="nurse-toggle">👩‍⚕️ Nurse input</button>
+
+        <div class="nurse-panel">
+          <div class="panel-title">Manual input</div>
+
+          <label class="input-label">Blood pressure</label>
+          <div class="input-row">
+            <input type="number" placeholder="Systolic (mmHg)">
+            <input type="number" placeholder="Diastolic (mmHg)">
+          </div>
+
+          <label class="input-label">Glucose</label>
+          <div class="input-row">
+            <input type="number" placeholder="Fasting (mmol/L)">
+            <input type="number" placeholder="Post-meal (mmol/L)">
+          </div>
+
+          <label class="input-label">Upload photo (optional)</label>
+          <input type="file" class="file-input">
+
+          <button class="nurse-save">Save</button>
+        </div>
+      </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: AI WEEKLY SUMMARY (VISUAL LIGHT) -->
+      <section class="card-soft">
+        <div class="card-header">
+          <div>
+            <div class="card-title">AI weekly trends</div>
+            <div class="card-sub">Short highlights only</div>
+          </div>
+          <span class="pill">🙂Risk: low–moderate</span>
+        </div>
+
+        <div class="ai-row">
+          <!-- Left: bullets -->
+          <div>
+            <div class="ai-highlight">Noticed this week</div>
+            <ul class="ai-list">
+              <li>
+                <span class="dot"></span>
+                <span>Thu–Fri evening BP a bit higher.</span>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <span>Higher after-dinner glucose on low-step days.</span>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <span>Evening medicines missed 2 times.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Right: suggestions in chips -->
+          <div>
+            <div class="ai-highlight">AI suggests</div>
+            <div class="ai-chips">
+              <span class="ai-chip">⏰ Move evening pill reminder to 20:30</span>
+              <span class="ai-chip">🚶 Add 10-min walk after dinner</span>
+              <span class="ai-chip">📞 If BP &gt; 140/90 ×3 → call Dr. Chan</span>
+              <span class="ai-chip">📄 Share this view at next clinic</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Serein chronic pathways · Path, routine, and gentle AI hints · Demo interface · Not a medical device.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const toggle = document.querySelector('.nurse-toggle');
+    const panel = document.querySelector('.nurse-panel');
+
+    toggle.addEventListener('click',()=>{
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    });
+  </script>
+
+
+</body>
+</html>

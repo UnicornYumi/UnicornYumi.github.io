@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Serein · Book services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courgette&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#e8f1fb;
+      --card:#ffffff;
+      --card-soft:#f5f7ff;
+      --text-main:#10213a;
+      --text-soft:#60708d;
+      --primary:#6faedc;
+      --primary2:#8ed3c5;
+      --shadow:0 18px 40px rgba(90,122,150,.18);
+      --radius:22px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(1200px 900px at 90% -10%,rgba(111,174,220,.45),transparent),
+        radial-gradient(900px 600px at -5% 0,rgba(244,198,215,.35),transparent),
+        var(--bg);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+    }
+    a{text-decoration:none;color:inherit;}
+
+    /* sidebar */
+    .sidebar{
+      width:220px;
+      padding:24px 18px;
+      background:rgba(14,23,42,0.95);
+      color:#f4f7ff;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+    .side-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .side-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .side-logo-icon img{
+        width:80%;
+        height:80%;
+        object-fit:contain;
+    }
+    .side-logo-text{
+      font-family:"Courgette",cursive;
+      font-size:24px;
+    }
+    .side-logo-tag{font-size:10px;color:#9faad7;margin-top:2px;}
+    .side-nav{
+      margin-top:10px;
+      display:flex;flex-direction:column;gap:4px;font-size:13px;
+    }
+    .side-link{
+      display:flex;align-items:center;gap:9px;
+      padding:8px 10px;border-radius:999px;
+      color:#d8e0ff;cursor:pointer;
+    }
+    .side-link span.icon{
+      width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.1);font-size:13px;
+    }
+    .side-link.active{
+      background:rgba(255,255,255,.16);color:#fff;
+    }
+    .side-footer{margin-top:auto;font-size:10px;color:#9faad7;}
+
+    /* main */
+    .main{flex:1;display:flex;flex-direction:column;}
+    .main-inner{
+      max-width:1120px;margin:0 auto;width:100%;
+      padding:20px 22px 32px;
+    }
+    .top-bar{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .top-left small{font-size:11px;color:var(--text-soft);}
+    .top-left h1{font-size:22px;margin-top:4px;}
+    .top-left h1 span{
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      -webkit-background-clip:text;color:transparent;
+    }
+    .top-right{
+      display:flex;flex-direction:column;align-items:flex-end;
+      gap:6px;font-size:11px;color:var(--text-soft);
+    }
+    .chip-row{display:flex;gap:8px;flex-wrap:wrap;}
+    .chip{
+      padding:5px 10px;border-radius:999px;
+      border:1px solid rgba(96,112,141,.3);
+      background:rgba(255,255,255,.8);
+      font-size:11px;cursor:pointer;
+    }
+    .chip.active{
+      border-color:rgba(111,174,220,.9);
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;
+    }
+
+    .card{
+      background:var(--card);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:16px 18px 18px;
+      margin-bottom:16px;
+    }
+    .card-header{
+      display:flex;justify-content:space-between;align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .card-title{font-size:14px;font-weight:600;}
+    .card-sub{font-size:11px;color:var(--text-soft);}
+    .pill{
+      padding:4px 10px;border-radius:999px;
+      font-size:11px;background:rgba(111,174,220,.12);
+      color:#325574;white-space:nowrap;
+    }
+
+    /* provider cards – 统一浅色风格 */
+    .provider-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media(max-width:900px){
+      .provider-grid{grid-template-columns:1fr;}
+    }
+    .provider-card{
+      background:linear-gradient(140deg,#f7fbff,#edf2ff);
+      border-radius:20px;
+      box-shadow:0 14px 30px rgba(120,145,190,.25);
+      border:1px solid rgba(167,187,222,.6);
+      padding:14px 14px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .provider-header{
+      display:flex;justify-content:space-between;align-items:flex-start;
+    }
+    .provider-name{font-size:15px;font-weight:700;}
+    .provider-meta{font-size:11px;color:var(--text-soft);margin-top:2px;}
+    .provider-price{
+      font-size:14px;font-weight:700;color:#325574;white-space:nowrap;
+    }
+    .provider-tags,
+    .provider-creds,
+    .provider-slots{
+      display:flex;flex-wrap:wrap;gap:6px;font-size:10px;
+    }
+    .pill-tag{
+      padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(160,181,221,.7);
+      background:rgba(255,255,255,.9);
+      color:#3a5175;
+    }
+    .slot-label{
+      padding:3px 8px;border-radius:999px;
+      background:rgba(235,242,255,.9);
+      border:1px solid rgba(160,181,221,.7);
+      color:#325574;
+    }
+    .provider-footer{
+      margin-top:6px;
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:11px;color:var(--text-soft);
+      gap:8px;
+    }
+    .btn-book{
+      padding:7px 14px;border-radius:999px;border:none;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;font-size:12px;font-weight:600;
+      cursor:pointer;box-shadow:0 8px 18px rgba(111,174,220,.4);
+      white-space:nowrap;
+    }
+
+    .section-label{
+      font-size:11px;color:var(--text-soft);
+      text-transform:uppercase;letter-spacing:.04em;
+      margin-bottom:4px;
+    }
+
+    .footer-note{
+      margin-top:14px;font-size:10px;
+      color:var(--text-soft);text-align:right;
+    }
+
+    @media(max-width:960px){
+      body{flex-direction:column;}
+      .sidebar{
+        width:100%;flex-direction:row;align-items:center;
+        padding:14px 18px;
+      }
+      .side-nav{display:none;}
+      .side-footer{display:none;}
+      .main-inner{padding:18px 16px 26px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- sidebar -->
+  <aside class="sidebar">
+    <div>
+      <div class="side-logo">
+        <div class="side-logo-icon"><img src="Logo_clean.png" alt="Serein Logo"></div>
+        <div>
+          <div class="side-logo-text">Serein</div>
+          <div class="side-logo-tag">Gentle smart care</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <a href="serein-home.html" class="side-link">
+          <span class="icon">🏠</span>Home dashboard
+        </a>
+        <a href="serein-metrics.html" class="side-link">
+          <span class="icon">📊</span>Health metrics
+        </a>
+        <a href="serein-bookings.html" class="side-link active">
+          <span class="icon">📅</span>Book services
+        </a>
+        <a href="serein-schedule.html" class="side-link">
+          <span class="icon">🧭</span>Schedule
+        </a>
+        <a href="serein-chronic.html" class="side-link">
+          <span class="icon">🫀</span>Chronic pathways
+        </a>
+        <a href="serein-AI.html" class="side-link">
+          <span class="icon">🕊️</span>AI Settings
+        </a>
+      </nav>
+    </div>
+    <div class="side-footer">
+      Demo UI for concept only · Not a medical device.
+    </div>
+  </aside>
+
+  <!-- main -->
+  <main class="main">
+    <div class="main-inner">
+      <header class="top-bar">
+        <div class="top-left">
+          <small>Bookings · Grandma Lin</small>
+          <h1>Book gentle <span>home & community</span> services</h1>
+        </div>
+        <div class="top-right">
+          <div class="chip-row">
+            <span class="chip active" data-filter="all">All</span>
+            <span class="chip" data-filter="pro">Professional care</span>
+            <span class="chip" data-filter="community">Community support</span>
+          </div>
+          <span>Choose a helper, then Serein will add it to the schedule page.</span>
+        </div>
+      </header>
+
+      <!-- 专业护理人员 -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Professional home care</div>
+            <div class="card-sub">Nurses, doctors and therapists who can visit Grandma Lin at home</div>
+          </div>
+          <span class="pill">Medical & nursing</span>
+        </div>
+
+        <div class="provider-grid">
+          <article class="provider-card" data-type="pro">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Nurse Li</div>
+                <div class="provider-meta">Rating 4.8 · 2.5 km</div>
+              </div>
+              <div class="provider-price">¥160/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Basic Nursing</span>
+              <span class="pill-tag">Clinic Escort</span>
+              <span class="pill-tag">Diabetes Care</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">RN License</span>
+              <span class="pill-tag">Health Cert</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">Slots: 08:00–11:00</span>
+              <span class="slot-label">13:00–16:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>By booking you agree to Serein’s care & safety terms.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="pro">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Dr. Chen</div>
+                <div class="provider-meta">Rating 4.7 · 3.1 km</div>
+              </div>
+              <div class="provider-price">¥260/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Family Medicine</span>
+              <span class="pill-tag">Blood Pressure Review</span>
+              <span class="pill-tag">Medication Plan</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">Clinic Partner</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">Thu 09:00–12:00</span>
+              <span class="slot-label">Sat 10:00–13:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Video + home visit combinations available.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="pro">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Physio Wang</div>
+                <div class="provider-meta">Rating 4.9 · 1.8 km</div>
+              </div>
+              <div class="provider-price">¥180/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Physiotherapy</span>
+              <span class="pill-tag">Balance Training</span>
+              <span class="pill-tag">Post-fall Rehab</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">PT License</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">Tue 10:00–12:00</span>
+              <span class="slot-label">Fri 14:00–18:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Gentle exercises · Serein will log progress automatically.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="pro">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Caregiver Zhao</div>
+                <div class="provider-meta">Rating 4.6 · 4.2 km</div>
+              </div>
+              <div class="provider-price">¥120/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Personal Care</span>
+              <span class="pill-tag">Bathing Assist</span>
+              <span class="pill-tag">Dementia-friendly</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">Health Cert</span>
+              <span class="pill-tag">Background Check</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">Slots: 13:00–18:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Suitable for regular weekly visits.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 社区服务者 / 志工 -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Community care & daily support</div>
+            <div class="card-sub">Trusted neighbours, community helpers and volunteers for everyday tasks</div>
+          </div>
+          <span class="pill">Cooking · groceries · walks · pharmacy</span>
+        </div>
+
+        <div class="provider-grid">
+          <article class="provider-card" data-type="community">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Auntie Wang</div>
+                <div class="provider-meta">Rating 4.9 · 1.2 km</div>
+              </div>
+              <div class="provider-price">¥88/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Cooking</span>
+              <span class="pill-tag">Cleaning</span>
+              <span class="pill-tag">Grocery Run</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">Community Centre</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">09:00–12:00</span>
+              <span class="slot-label">14:00–18:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Warm home-style meals and light cleaning.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="community">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Mr. Chen</div>
+                <div class="provider-meta">Rating 4.6 · 3.8 km</div>
+              </div>
+              <div class="provider-price">¥75/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Grocery Run</span>
+              <span class="pill-tag">Pharmacy Pickup</span>
+              <span class="pill-tag">Bill Payments</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">10:00–12:00</span>
+              <span class="slot-label">15:00–19:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Ideal for errands when family is busy.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="community">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Social Worker Zhou</div>
+                <div class="provider-meta">Rating 4.7 · 4.9 km</div>
+              </div>
+              <div class="provider-price">¥90/hr</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Clinic Escort</span>
+              <span class="pill-tag">Grocery Run</span>
+              <span class="pill-tag">Cooking</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">ID Verified</span>
+              <span class="pill-tag">Background Check</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">09:00–12:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Good for hospital days and paperwork.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+
+          <article class="provider-card" data-type="community">
+            <div class="provider-header">
+              <div>
+                <div class="provider-name">Volunteer Lin</div>
+                <div class="provider-meta">Rating 4.8 · 1.9 km</div>
+              </div>
+              <div class="provider-price">Free</div>
+            </div>
+            <div class="provider-tags">
+              <span class="pill-tag">Walk & Chat</span>
+              <span class="pill-tag">Reading</span>
+              <span class="pill-tag">Digital Help</span>
+            </div>
+            <div class="provider-creds">
+              <span class="pill-tag">Community Volunteer</span>
+            </div>
+            <div class="provider-slots">
+              <span class="slot-label">Sat 15:00–17:00</span>
+            </div>
+            <div class="provider-footer">
+              <span>Short walks, friendly chats, simple phone help.</span>
+              <button class="btn-book">Book</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Serein bookings · Home & community services in one place · Demo interface · Not a medical device.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 过滤 All / Professional / Community （只做视觉过滤）
+    const filterChips = document.querySelectorAll('.chip[data-filter]');
+    const cards = document.querySelectorAll('.provider-card');
+
+    filterChips.forEach(chip=>{
+      chip.addEventListener('click',()=>{
+        filterChips.forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        const type = chip.dataset.filter;
+        cards.forEach(card=>{
+          const t = card.dataset.type;
+          card.style.display =
+            (type === 'all' || type === t) ? '' : 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
