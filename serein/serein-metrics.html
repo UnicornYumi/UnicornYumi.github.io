@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Serein · Health Metrics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courgette&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --bg:#e8f1fb;
+      --bg-deep:#0e172a;
+      --card:#ffffff;
+      --card-soft:#f5f7ff;
+      --text-main:#10213a;
+      --text-soft:#60708d;
+      --primary:#6faedc;
+      --primary2:#8ed3c5;
+      --shadow:0 18px 40px rgba(90,122,150,.18);
+      --radius:22px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(1200px 900px at 90% -10%,rgba(111,174,220,.45),transparent),
+        radial-gradient(900px 600px at -5% 0,rgba(244,198,215,.35),transparent),
+        var(--bg);
+      color:var(--text-main);
+      min-height:100vh;
+      display:flex;
+    }
+    a{text-decoration:none;color:inherit;}
+    canvas{max-width:100%;}
+
+    /* SIDEBAR */
+    .sidebar{
+      width:220px;
+      padding:24px 18px;
+      background:rgba(14,23,42,0.95);
+      color:#f4f7ff;
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+    .side-logo{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .side-logo-icon{
+      width:40px;
+      height:40px;
+      border-radius:16px;
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      display:grid;
+      place-items:center;
+      box-shadow:0 8px 20px rgba(0,0,0,.3);
+    }
+    .side-logo-icon img{
+        width:80%;
+        height:80%;
+        object-fit:contain;
+    }
+    .side-logo-text{
+      font-family:"Courgette",cursive;
+      font-size:24px;
+    }
+    .side-logo-tag{
+      font-size:10px;
+      color:#9faad7;
+      margin-top:2px;
+    }
+    .side-nav{
+      margin-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      font-size:13px;
+    }
+    .side-link{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      padding:8px 10px;
+      border-radius:999px;
+      color:#d8e0ff;
+      cursor:pointer;
+    }
+    .side-link span.icon{
+      width:22px;height:22px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.1);
+      font-size:13px;
+    }
+    .side-link.active{
+      background:rgba(255,255,255,.16);
+      color:#ffffff;
+    }
+    .side-footer{
+      margin-top:auto;
+      font-size:10px;
+      color:#9faad7;
+    }
+
+    /* MAIN */
+    .main{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+    .main-inner{
+      max-width:1120px;
+      margin:0 auto;
+      width:100%;
+      padding:20px 22px 32px;
+    }
+
+    .top-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:18px;
+    }
+    .top-left small{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .top-left h1{
+      font-size:22px;
+      margin-top:4px;
+    }
+    .top-left h1 span{
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      -webkit-background-clip:text;
+      color:transparent;
+    }
+    .top-right{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:6px;
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .chip-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(96,112,141,.3);
+      background:rgba(255,255,255,.8);
+      cursor:pointer;
+      font-size:11px;
+    }
+    .chip.active{
+      border-color:rgba(111,174,220,.9);
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;
+    }
+
+    /* TABS CARD */
+    .tabs-card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px 18px 10px;
+      margin-bottom:12px;
+    }
+    .tabs-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .tabs-title{
+      font-size:14px;
+      font-weight:600;
+    }
+    .tabs-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .metric-tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:6px;
+    }
+    .metric-tab{
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid rgba(96,112,141,.3);
+      background:rgba(255,255,255,.9);
+      font-size:11px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      color:var(--text-soft);
+    }
+    .metric-tab span.emoji{font-size:13px;}
+    .metric-tab.active{
+      border-color:rgba(111,174,220,.9);
+      background:linear-gradient(135deg,#6faedc,#8ed3c5);
+      color:#0e172a;
+    }
+    .battery-pill{
+        display:flex;
+        align-items:center;
+        gap:6px;
+        padding:6px 10px;
+        border-radius:999px;
+        background:rgba(232,241,251,0.95);
+        border:1px solid rgba(96,112,141,0.25);
+        font-size:11px;
+        color:var(--text-soft);
+        white-space:nowrap;
+    }
+    .battery-icon{
+        font-size:13px;
+    }
+    .battery-level{
+        font-weight:600;
+        color:#2c5b7e;
+    }
+
+
+    /* PANELS */
+    .panel-card{
+      background:linear-gradient(145deg,#f7fbff,#edf1ff);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px 18px 18px;
+      margin-top:4px;
+    }
+    .panel-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .panel-title{
+      font-size:14px;
+      font-weight:600;
+    }
+    .panel-sub{
+      font-size:11px;
+      color:var(--text-soft);
+    }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:11px;
+      background:rgba(111,174,220,.12);
+      color:#325574;
+    }
+    .metric-panel.hidden{
+      display:none;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.4fr 1fr;
+      gap:16px;
+      margin-top:6px;
+    }
+    .grid-2-balance{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:6px;
+    }
+
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:11px;
+      color:var(--text-soft);
+      margin-top:6px;
+    }
+    .table th,.table td{
+      padding:6px 4px;
+      border-bottom:1px solid rgba(153,172,205,.25);
+      text-align:left;
+    }
+    .table th{
+      font-weight:600;
+      color:var(--text-main);
+      font-size:11px;
+    }
+    .chart-small {
+        height:300px;
+        width:300px;
+        margin-left: 120px;
+    }
+    .chart-box {
+        height: 260px;   /* 可以自己调整 */
+    }
+    .chart-box canvas {
+        height: 100%;
+    }
+
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 8px;
+      border-radius:999px;
+      background:rgba(142,211,197,.16);
+      color:#2c6b58;
+      font-size:10px;
+    }
+
+    .notes{
+      font-size:11px;
+      color:var(--text-soft);
+      margin-top:6px;
+      line-height:1.5;
+    }
+
+    .footer-note{
+      margin-top:18px;
+      font-size:10px;
+      color:var(--text-soft);
+      text-align:right;
+    }
+
+    @media (max-width:960px){
+      body{flex-direction:column;}
+      .sidebar{
+        width:100%;
+        flex-direction:row;
+        align-items:center;
+        padding:14px 18px;
+      }
+      .side-nav{display:none;}
+      .side-footer{display:none;}
+      .main-inner{padding:18px 16px 26px;}
+      .grid-2{grid-template-columns:1fr;}
+      .grid-2-balance{grid-template-columns:1fr;}
+      .tabs-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;}
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="side-logo">
+        <div class="side-logo-icon"><img src="Logo_clean.png" alt="Serein Logo"></div>
+        <div>
+          <div class="side-logo-text">Serein</div>
+          <div class="side-logo-tag">Gentle smart care</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <a href="serein-home.html" class="side-link">
+          <span class="icon">🏠</span>Home dashboard
+        </a>
+        <a href="serein-metrics.html" class="side-link active">
+          <span class="icon">📊</span>Health metrics
+        </a>
+        <a href="serein-bookings.html" class="side-link">
+          <span class="icon">📅</span>Book services
+        </a>
+        <a href="serein-schedule.html" class="side-link">
+          <span class="icon">🧭</span>Schedule
+        </a>
+        <a href="serein-chronic.html" class="side-link">
+          <span class="icon">🫀</span>Chronic pathways
+        </a>
+        <a href="serein-AI.html" class="side-link">
+          <span class="icon">🕊️</span>AI Settings
+        </a>
+      </nav>
+    </div>
+    <div class="side-footer">
+      Demo UI for concept only · Not a medical device.
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-inner">
+      <!-- 顶部 -->
+      <header class="top-bar">
+        <div class="top-left">
+          <small>Metrics overview · Grandma Lin · from smart band</small>
+          <h1>Health metrics for <span>gentle aging</span></h1>
+        </div>
+        <div class="top-right">
+          <div class="chip-row">
+            <span class="chip active">Last 7 days</span>
+            <span class="chip">Last 30 days</span>
+            <span class="chip">Custom (coming soon)</span>
+          </div>
+          <span>Data source: wearables + manual logs · demo only</span>
+        </div>
+      </header>
+
+      <!-- 标签卡片 -->
+      <section class="tabs-card">
+        <div class="tabs-header">
+          <div>
+            <div class="tabs-title">Select a metrics category</div>
+            <div class="tabs-sub">Click to explore different signals from Grandma Lin’s smart band.</div>
+          </div>
+          <div class="battery-pill">
+            <span class="battery-icon">🔋</span>
+            <span class="battery-label">Band battery</span>
+            <span class="battery-level">82%</span>
+          </div>
+        </div>
+        <div class="metric-tabs">
+          <button class="metric-tab active" data-tab="vitals">
+            <span class="emoji">💓</span> Vitals
+          </button>
+          <button class="metric-tab" data-tab="activity">
+            <span class="emoji">🚶</span> Activity
+          </button>
+          <button class="metric-tab" data-tab="sleep">
+            <span class="emoji">🌙</span> Sleep
+          </button>
+          <button class="metric-tab" data-tab="stress">
+            <span class="emoji">🕊️</span> Stress & Mood
+          </button>
+        </div>
+      </section>
+
+      <!-- 各模块 Panel -->
+      <section id="panels">
+        <!-- VITALS -->
+        <div class="panel-card metric-panel" id="panel-vitals">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Vitals from the smart band</div>
+              <div class="panel-sub">Heart rate, blood pressure and oxygen saturation · last 7 days</div>
+            </div>
+            <span class="pill">Overall: calm & stable</span>
+          </div>
+
+          <div class="grid-2">
+            <div class="chart-box">
+                <div class="panel-sub">Heart rate trend</div>
+                <canvas height=170px weight=100% id="hrChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <div class="panel-sub">Blood pressure (systolic / diastolic)</div>
+                <canvas height=215px weight=100% id="bpChart"></canvas>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Average</th>
+                <th>Target range</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Resting HR</td>
+                <td>76 bpm</td>
+                <td>60–85 bpm</td>
+                <td><span class="badge">Calm</span></td>
+              </tr>
+              <tr>
+                <td>Daytime HR</td>
+                <td>88 bpm</td>
+                <td>&lt; 100 bpm</td>
+                <td><span class="badge">Safe</span></td>
+              </tr>
+              <tr>
+                <td>Blood pressure</td>
+                <td>124 / 76</td>
+                <td>&lt; 130 / 80</td>
+                <td><span class="badge">On track</span></td>
+              </tr>
+              <tr>
+                <td>SpO₂ (night)</td>
+                <td>96%</td>
+                <td>&gt; 94%</td>
+                <td><span class="badge">No concern</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="notes">
+            • No urgent deviations in heart rate or blood pressure this week.<br>
+            • Smart band did not detect any critical drops in oxygen saturation at night.<br>
+            • Continue current movement and medication plan unless advised otherwise by Dr. Chan.
+          </div>
+        </div>
+
+        <!-- ACTIVITY -->
+        <div class="panel-card metric-panel hidden" id="panel-activity">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Daily activity & movement</div>
+              <div class="panel-sub">Steps, active minutes and sedentary time · based on smart band data</div>
+            </div>
+            <span class="pill">Gently improving</span>
+          </div>
+
+          <div class="grid-2-balance">
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Steps per day</div>
+              <canvas id="stepsChart"></canvas>
+            </div>
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Active vs sedentary time</div>
+              <div class="chart-small">
+                <canvas id="activityChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Average</th>
+                <th>Suggested</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Steps per day</td>
+                <td>6,320</td>
+                <td>≥ 6,000</td>
+                <td><span class="badge">On track</span></td>
+              </tr>
+              <tr>
+                <td>Active minutes</td>
+                <td>38 min</td>
+                <td>30–45 min</td>
+                <td><span class="badge">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>Sedentary time</td>
+                <td>8.5 h</td>
+                <td>&lt; 9 h</td>
+                <td><span class="badge">Acceptable</span></td>
+              </tr>
+              <tr>
+                <td>Outdoor walks</td>
+                <td>4 days / week</td>
+                <td>3–5 days</td>
+                <td><span class="badge">Great</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="notes">
+            • Smart band shows a small but steady increase in steps compared to last week.<br>
+            • Keeping the short afternoon walk is very helpful for both blood sugar and mood.<br>
+            • If steps drop below 3,000 for 3 days in a row, Serein can nudge the care circle.
+          </div>
+        </div>
+
+        <!-- SLEEP -->
+        <div class="panel-card metric-panel hidden" id="panel-sleep">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Sleep quality & night-time breathing</div>
+              <div class="panel-sub">Sleep stages and awakenings · measured by the smart band</div>
+            </div>
+            <span class="pill">Restorative</span>
+          </div>
+
+          <div class="grid-2-balance">
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Average sleep stages (per night)</div>
+              <canvas id="sleepChart"></canvas>
+            </div>
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Night awakenings & SpO₂</div>
+              <canvas id="nightChart"></canvas>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Average</th>
+                <th>Target</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Total sleep</td>
+                <td>7.8 h</td>
+                <td>7–9 h</td>
+                <td><span class="badge">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>Deep sleep</td>
+                <td>1.5 h</td>
+                <td>1–2 h</td>
+                <td><span class="badge">Good</span></td>
+              </tr>
+              <tr>
+                <td>Night awakenings</td>
+                <td>1–2 times</td>
+                <td>&lt; 3 times</td>
+                <td><span class="badge">Acceptable</span></td>
+              </tr>
+              <tr>
+                <td>Night SpO₂</td>
+                <td>96%</td>
+                <td>&gt; 94%</td>
+                <td><span class="badge">No concern</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="notes">
+            • Smart band data suggests a stable sleep routine with sufficient deep sleep.<br>
+            • Occasional short awakenings are normal and not associated with oxygen drops.<br>
+            • If awakenings increase or SpO₂ dips, Serein can suggest a sleep review with the care team.
+          </div>
+        </div>
+
+        <!-- STRESS & MOOD -->
+        <div class="panel-card metric-panel hidden" id="panel-stress">
+          <div class="panel-header">
+            <div>
+              <div class="panel-title">Stress & mood from HRV</div>
+              <div class="panel-sub">Smart band uses heart rate variability to estimate stress levels</div>
+            </div>
+            <span class="pill">Mostly calm</span>
+          </div>
+
+          <div class="grid-2-balance">
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Daily stress score</div>
+              <canvas id="stressChart"></canvas>
+            </div>
+            <div>
+              <div class="panel-sub" style="margin-bottom:4px;">Relaxation vs tension time</div>
+              <div class="chart-small">
+                <canvas id="relaxChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Average</th>
+                <th>Interpretation</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Stress score (0–100)</td>
+                <td>32</td>
+                <td>0–40 = calm</td>
+                <td><span class="badge">Calm</span></td>
+              </tr>
+              <tr>
+                <td>Relaxed minutes</td>
+                <td>85 min / day</td>
+                <td>Guided breathing & tea time</td>
+                <td><span class="badge">Supportive</span></td>
+              </tr>
+              <tr>
+                <td>High-tension episodes</td>
+                <td>1–2 / week</td>
+                <td>Often around clinic days</td>
+                <td><span class="badge">Monitor only</span></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="notes">
+            • Serein can gently suggest breathing exercises or music when stress rises.<br>
+            • If stress score stays &gt; 60 for several days, the care circle will be notified.<br>
+            • Data is supportive, not diagnostic — feelings and conversations always matter more.
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Serein health metrics · Smart band powered · Demo interface · Not a medical device.
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // tab 切换
+    const tabs = document.querySelectorAll('.metric-tab');
+    const panels = document.querySelectorAll('.metric-panel');
+
+    function activateTab(name){
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+      panels.forEach(p => {
+        if(p.id === 'panel-' + name){
+          p.classList.remove('hidden');
+        }else{
+          p.classList.add('hidden');
+        }
+      });
+    }
+
+    tabs.forEach(t => {
+      t.addEventListener('click', () => activateTab(t.dataset.tab));
+    });
+
+    // demo 数据
+    const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+    // HR
+    const hrCtx = document.getElementById('hrChart').getContext('2d');
+    new Chart(hrCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Heart rate',
+          data: [78,80,76,74,77,75,76],
+          tension:0.4,
+          borderColor:'#6faedc',
+          backgroundColor:'rgba(111,174,220,0.18)',
+          pointRadius:2,
+          fill:true
+        }]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:'rgba(96,112,141,0.1)'}},
+          y:{suggestedMin:60,suggestedMax:90,grid:{color:'rgba(96,112,141,0.1)'}}
+        }
+      }
+    });
+
+    // BP
+    const bpCtx = document.getElementById('bpChart').getContext('2d');
+    new Chart(bpCtx, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[
+          {
+            label:'Systolic',
+            data:[126,124,122,128,125,123,124],
+            tension:0.3,
+            borderColor:'#f4c6d7',
+            backgroundColor:'rgba(244,198,215,0.15)',
+            pointRadius:2,
+            fill:true
+          },
+          {
+            label:'Diastolic',
+            data:[78,76,74,79,77,75,76],
+            tension:0.3,
+            borderColor:'#8ed3c5',
+            backgroundColor:'rgba(142,211,197,0.12)',
+            pointRadius:2,
+            fill:true
+          }
+        ]
+      },
+      options:{
+        plugins:{legend:{position:'bottom'}},
+        scales:{
+          x:{grid:{color:'rgba(96,112,141,0.08)'}},
+          y:{suggestedMin:60,suggestedMax:140,grid:{color:'rgba(96,112,141,0.08)'}}
+        }
+      }
+    });
+
+    // Steps
+    const stepsCtx = document.getElementById('stepsChart').getContext('2d');
+    new Chart(stepsCtx, {
+      type:'bar',
+      data:{
+        labels,
+        datasets:[{
+          data:[5800,6100,6400,6200,6700,6900,6300],
+          backgroundColor:'rgba(142,211,197,0.9)',
+          borderWidth:0,
+          borderRadius:8
+        }]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false}},
+          y:{grid:{color:'rgba(96,112,141,0.08)'}}
+        }
+      }
+    });
+
+    // Activity (active vs sedentary)
+    const activityCtx = document.getElementById('activityChart').getContext('2d');
+    new Chart(activityCtx, {
+      type:'doughnut',
+      data:{
+        labels:['Active time','Sedentary time'],
+        datasets:[{
+          data:[2.5,8.5],
+          backgroundColor:['#8ed3c5','#b5c6f2']
+        }]
+      },
+      options:{
+        plugins:{legend:{position:'bottom'}},
+        cutout:'60%'
+      }
+    });
+
+    // Sleep stages
+    const sleepCtx = document.getElementById('sleepChart').getContext('2d');
+    new Chart(sleepCtx, {
+      type:'bar',
+      data:{
+        labels:['Deep','REM','Light','Awake'],
+        datasets:[{
+          data:[1.5,1.8,3.8,0.7],
+          backgroundColor:['#6faedc','#8ed3c5','#b5c6f2','#ffe2b0'],
+          borderWidth:0
+        }]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{display:false}},
+          y:{grid:{color:'rgba(96,112,141,0.08)'}}
+        }
+      }
+    });
+
+    // Night awakenings & SpO2 (simple line)
+    const nightCtx = document.getElementById('nightChart').getContext('2d');
+    new Chart(nightCtx, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[
+          {
+            label:'Awakenings',
+            data:[2,1,1,2,1,1,2],
+            yAxisID:'y',
+            borderColor:'#f4c6d7',
+            backgroundColor:'rgba(244,198,215,0.18)',
+            tension:0.3,
+            fill:true,
+            pointRadius:2
+          },
+          {
+            label:'SpO₂ (%)',
+            data:[96,96,97,95,96,96,97],
+            yAxisID:'y1',
+            borderColor:'#6faedc',
+            backgroundColor:'rgba(111,174,220,0.05)',
+            tension:0.3,
+            fill:false,
+            pointRadius:2
+          }
+        ]
+      },
+      options:{
+        plugins:{legend:{position:'bottom'}},
+        scales:{
+          x:{grid:{color:'rgba(96,112,141,0.08)'}},
+          y:{type:'linear',position:'left',grid:{color:'rgba(96,112,141,0.08)'},suggestedMin:0,suggestedMax:4},
+          y1:{type:'linear',position:'right',grid:{display:false},suggestedMin:92,suggestedMax:100}
+        }
+      }
+    });
+
+    // Stress
+    const stressCtx = document.getElementById('stressChart').getContext('2d');
+    new Chart(stressCtx, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[{
+          label:'Stress score (0–100)',
+          data:[28,30,35,40,32,29,31],
+          borderColor:'#f4c6d7',
+          backgroundColor:'rgba(244,198,215,0.18)',
+          tension:0.4,
+          fill:true,
+          pointRadius:2
+        }]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:'rgba(96,112,141,0.08)'}},
+          y:{suggestedMin:0,suggestedMax:100,grid:{color:'rgba(96,112,141,0.08)'}}
+        }
+      }
+    });
+
+    // Relaxation vs tension
+    const relaxCtx = document.getElementById('relaxChart').getContext('2d');
+    new Chart(relaxCtx, {
+      type:'doughnut',
+      data:{
+        labels:['Relaxed','Mild tension','High tension'],
+        datasets:[{
+          data:[70,25,5],
+          backgroundColor:['#8ed3c5','#b5c6f2','#f4c6d7']
+        }]
+      },
+      options:{
+        plugins:{legend:{position:'bottom'}},
+        cutout:'55%'
+      }
+    });
+
+    // 默认激活 vitals（实际已经在 HTML 设置 active，这里只是保证逻辑）
+    activateTab('vitals');
+  </script>
+</body>
+</html>
